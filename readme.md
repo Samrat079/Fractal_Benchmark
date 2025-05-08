@@ -15,7 +15,7 @@ This is a **web-based benchmarking tool** that uses **ray marching** to render a
 
 ## 📸 Preview
 
-![Fractal Screenshot](screenshot.png) 
+![Fractal Screenshot](fractal_demo.png) 
 
 ## 🛠️ How to Use
 
