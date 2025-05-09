@@ -67,10 +67,11 @@ function updatePerformance() {
     var elapsed = currentTime - lastPerformanceUpdate;
     
     if (elapsed >= 1000) {
-        // each pixel: 252 ray steps × ~2.5 kernel calls × 2 solver iterations
+        // Calculate operations per frame
+        // For each pixel: 252 ray steps × ~2.5 kernel calls × 2 solver iterations
         var screenPixels = canvas.width * canvas.height;
         var opsPerFrame = screenPixels * 252 * 2.5 * 2;
-        var opsPerSecond = (opsPerFrame * fps) / 1000000; 
+        var opsPerSecond = (opsPerFrame * fps) / 1000000; // Convert to millions
         
         performanceElement.innerText = opsPerSecond.toFixed(1);
         lastPerformanceUpdate = currentTime;
@@ -454,10 +455,10 @@ window.onload = function () {
             "      r3 = max(0.0,r3);\n" +
             "      r3 = r3 * r3*r3*r3;\n" +
             "      r3 = r3 * 0.45 + r4 * 0.25 + 0.3;\n" +
-            // colore
-            "      n.x = sin(r1*8.0)*0.5+0.5;  // Red\n" +
-            "      n.y = sin(r1*8.0+3.14)*0.5+0.5;  // Blue \n" +
-            "      n.z = sin(r1*8.0+1.57)*0.5+0.5;  // Purple \n" +
+            "      // Modified color calculation for purple, blue, and red scheme\n" +
+            "      n.x = sin(r1*8.0)*0.5+0.5;  // Red component\n" +
+            "      n.y = sin(r1*8.0+3.14)*0.5+0.5;  // Blue component\n" +
+            "      n.z = sin(r1*8.0+1.57)*0.5+0.5;  // Purple component\n" +
             "      color = n*r3;\n" +
             "   }\n" +
             "   gl_FragColor = vec4(color.x, color.y, color.z, 1.0);" +
@@ -509,7 +510,7 @@ window.onload = function () {
 
         // Add touch event handling for mobile
         document.getElementById("pauseBtn").addEventListener("touchstart", function(e) {
-            e.preventDefault(); 
+            e.preventDefault(); // Prevent double-firing on mobile
             isPaused = !isPaused;
             this.innerText = isPaused ? "PLAY" : "PAUSE";
             if (isPaused) {
@@ -635,62 +636,4 @@ window.onload = function () {
     } catch (error) {
         console.error("Error initializing WebGL:", error);
     }
-
-document.getElementById('apply').addEventListener('click', function() {
-    try {
-
-        KERNEL = document.getElementById('kernel').value;
-        gl.shaderSource(fragshader, FSHADER_SOURCE + KERNEL);
-        gl.compileShader(fragshader);
-        
-        var infof = gl.getShaderInfoLog(fragshader);
-        if (infof) {
-            console.error("Fragment shader compilation error:", infof);
-            alert("Shader compilation error: " + infof);
-            return;
-        }
-
-        gl.linkProgram(shaderProgram);
-        gl.useProgram(shaderProgram);
-
-        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-            var info = gl.getProgramInfoLog(shaderProgram);
-            console.error("Shader program linking error:", info);
-            alert("Shader linking error: " + info);
-            return;
-        }
-
-        // Update uniform locations
-        glposition = gl.getAttribLocation(shaderProgram, 'position');
-        glright = gl.getUniformLocation(shaderProgram, 'right');
-        glforward = gl.getUniformLocation(shaderProgram, 'forward');
-        glup = gl.getUniformLocation(shaderProgram, 'up');
-        glorigin = gl.getUniformLocation(shaderProgram, 'origin');
-        glx = gl.getUniformLocation(shaderProgram, 'x');
-        gly = gl.getUniformLocation(shaderProgram, 'y');
-        gllen = gl.getUniformLocation(shaderProgram, 'len');
-        
-        // Hide the config panel
-        document.getElementById('config').style.display = 'none';
-        
-        // Update the display
-        draw();
-    } catch (error) {
-        console.error("Error applying shader:", error);
-        alert("Error applying shader: " + error.message);
-    }
-});
-
-// Add touch event handler for advanced
-document.getElementById('advancedToggle').addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    var configPanel = document.getElementById('config');
-    if (configPanel.style.display === 'block') {
-        configPanel.style.display = 'none';
-    } else {
-        configPanel.style.display = 'block';
-    }
-}, { passive: false });
-
 } 
-

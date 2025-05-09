@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -88,42 +88,6 @@
             color: #fff;
             text-align: right;
         }
-        /* Hide the config section by default */
-        #config {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(40, 40, 40, 0.9);
-            padding: 20px;
-            border-radius: 5px;
-            z-index: 200;
-            width: 80%;
-            max-width: 600px;
-        }
-        #kernel {
-            width: 100%;
-            height: 200px;
-            background: #222;
-            color: #fff;
-            border: 1px solid #444;
-            padding: 10px;
-            font-family: monospace;
-            margin-bottom: 10px;
-        }
-        #config button {
-            padding: 8px 16px;
-            margin-right: 10px;
-            background: #555;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #config button:hover {
-            background: #666;
-        }
         @media screen and (max-aspect-ratio: 1/1) {
             .control-panel {
                 top: auto;
@@ -208,9 +172,15 @@
     <button id="pauseBtn">PAUSE</button>
 </div>
 <div id="stats-container">
-    <div id="fps">FPS: <span>0</span></div>
+<div id="fps">FPS: <span>0</span></div>
     <div id="performance">Performance: <span>0</span>M ops/frame</div>
 </div>
- <script src="app.js"></script> 
+     <div id="config">
+        <textarea name="" id="kernel" cols="30" rows="10"></textarea>
+        <br />
+        <button id="apply">APPLY</button>
+        <button id="cancle">CANCLE</button>
+    </div>
+    <script src="app.js"></script>
 </body>
 </html>
