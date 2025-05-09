@@ -454,7 +454,7 @@ window.onload = function () {
             "      r3 = max(0.0,r3);\n" +
             "      r3 = r3 * r3*r3*r3;\n" +
             "      r3 = r3 * 0.45 + r4 * 0.25 + 0.3;\n" +
-            "      // color
+            // colore
             "      n.x = sin(r1*8.0)*0.5+0.5;  // Red\n" +
             "      n.y = sin(r1*8.0+3.14)*0.5+0.5;  // Blue \n" +
             "      n.z = sin(r1*8.0+1.57)*0.5+0.5;  // Purple \n" +

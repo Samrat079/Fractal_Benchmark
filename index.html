@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -123,20 +124,6 @@
         #config button:hover {
             background: #666;
         }
-        /* Advanced toggle button */
-        #advancedToggle {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(40, 40, 40, 0.7);
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            padding: 5px 10px;
-            font-size: 12px;
-            cursor: pointer;
-            z-index: 100;
-        }
         @media screen and (max-aspect-ratio: 1/1) {
             .control-panel {
                 top: auto;
@@ -188,10 +175,6 @@
                 padding: 0.8vw 1.2vw;
                 text-align: right;
             }
-            #advancedToggle {
-                font-size: 3vw;
-                padding: 1vw 2vw;
-            }
         }
     </style>
 </head>
@@ -234,23 +217,6 @@
     <button id="apply">APPLY</button>
     <button id="cancle">CANCEL</button>
 </div>
-<button id="advancedToggle">Advanced</button>
-<script>
-    // Add a toggle for the advanced config panel
-    document.getElementById('advancedToggle').addEventListener('click', function() {
-        var configPanel = document.getElementById('config');
-        if (configPanel.style.display === 'block') {
-            configPanel.style.display = 'none';
-        } else {
-            configPanel.style.display = 'block';
-        }
-    });
-    
-    // Correct the cancel button functionality
-    document.getElementById('cancle').addEventListener('click', function() {
-        document.getElementById('config').style.display = 'none';
-    });
-</script>
 <script src="app.js"></script>
 </body>
 </html>
