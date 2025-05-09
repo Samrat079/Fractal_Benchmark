@@ -302,167 +302,186 @@ window.onload = function () {
             throw new Error('WebGL not supported');
         }
 
-        var VSHADER_SOURCE =
-            "#version 100 \n"+
-            "precision highp float;\n" +
-            "attribute vec4 position;" +
-            "varying vec3 dir, localdir;" +
-            "uniform vec3 right, forward, up, origin;" +
-            "uniform float x,y;" +
-            "void main() {" +
-            "   gl_Position = position; " +
-            "   dir = forward + right * position.x*x + up * position.y*y;" +
-            "   localdir.x = position.x*x;" +
-            "   localdir.y = position.y*y;" +
-            "   localdir.z = -1.0;" +
-            "} ";
-        var FSHADER_SOURCE =
-            "#version 100 \n" +
-            "#define PI 3.14159265358979324\n" +
-            "#define M_L 0.3819660113\n" +
-            "#define M_R 0.6180339887\n" +
-            "#define MAXR 32\n" +
-            "#define SOLVER 32\n" +
-            "precision highp float;\n" +
-            "float kernal(vec3 ver)\n;" +
-            "uniform vec3 right, forward, up, origin;\n" +
-            "varying vec3 dir, localdir;\n" +
-            "uniform float len;\n" +
-            "vec3 ver;\n" +
-            "int sign;"+
-            "float v, v1, v2;\n" +
-            "float r1, r2, r3, r4, m1, m2, m3, m4;\n" +
-            "vec3 n, reflect;\n" +
-            "const float step = 0.002;\n" +
-            "vec3 color;\n" +
-            "void main() {\n" +
-            "   color.r=0.0;\n" +
-            "   color.g=0.0;\n" +
-            "   color.b=0.0;\n" +
-            "   sign=0;"+
-            "   v1 = kernal(origin + dir * (step*len));\n" +
-            "   v2 = kernal(origin);\n" +
-            "   for (int k = 2; k < 1008; k++) {\n" +
-            "      ver = origin + dir * (step*len*float(k));\n" +
-            "      v = kernal(ver);\n" +
-            "      if (v > 0.0 && v1 < 0.0) {\n" +
-            "         r1 = step * len*float(k - 1);\n" +
-            "         r2 = step * len*float(k);\n" +
-            "         m1 = kernal(origin + dir * r1);\n" +
-            "         m2 = kernal(origin + dir * r2);\n" +
-            "         for (int l = 0; l < 2; l++) {\n" +
-            "            r3 = r1 * 0.5 + r2 * 0.5;\n" +
-            "            m3 = kernal(origin + dir * r3);\n" +
-            "            if (m3 > 0.0) {\n" +
-            "               r2 = r3;\n" +
-            "               m2 = m3;\n" +
-            "            }\n" +
-            "            else {\n" +
-            "               r1 = r3;\n" +
-            "               m1 = m3;\n" +
-            "            }\n" +
-            "         }\n" +
-            "         if (r3 < 2.0 * len) {\n" +
-            "               sign=1;" +
-            "            break;\n" +
-            "         }\n" +
-            "      }\n" +
-            "      if (v < v1&&v1>v2&&v1 < 0.0 && (v1*2.0 > v || v1 * 2.0 > v2)) {\n" +
-            "         r1 = step * len*float(k - 2);\n" +
-            "         r2 = step * len*(float(k) - 2.0 + 2.0*M_L);\n" +
-            "         r3 = step * len*(float(k) - 2.0 + 2.0*M_R);\n" +
-            "         r4 = step * len*float(k);\n" +
-            "         m2 = kernal(origin + dir * r2);\n" +
-            "         m3 = kernal(origin + dir * r3);\n" +
-            "         for (int l = 0; l < 2; l++) {\n" +
-            "            if (m2 > m3) {\n" +
-            "               r4 = r3;\n" +
-            "               r3 = r2;\n" +
-            "               r2 = r4 * M_L + r1 * M_R;\n" +
-            "               m3 = m2;\n" +
-            "               m2 = kernal(origin + dir * r2);\n" +
-            "            }\n" +
-            "            else {\n" +
-            "               r1 = r2;\n" +
-            "               r2 = r3;\n" +
-            "               r3 = r4 * M_R + r1 * M_L;\n" +
-            "               m2 = m3;\n" +
-            "               m3 = kernal(origin + dir * r3);\n" +
-            "            }\n" +
-            "         }\n" +
-            "         if (m2 > 0.0) {\n" +
-            "            r1 = step * len*float(k - 2);\n" +
-            "            r2 = r2;\n" +
-            "            m1 = kernal(origin + dir * r1);\n" +
-            "            m2 = kernal(origin + dir * r2);\n" +
-            "            for (int l = 0; l < 2; l++) {\n" +
-            "               r3 = r1 * 0.5 + r2 * 0.5;\n" +
-            "               m3 = kernal(origin + dir * r3);\n" +
-            "               if (m3 > 0.0) {\n" +
-            "                  r2 = r3;\n" +
-            "                  m2 = m3;\n" +
-            "               }\n" +
-            "               else {\n" +
-            "                  r1 = r3;\n" +
-            "                  m1 = m3;\n" +
-            "               }\n" +
-            "            }\n" +
-            "            if (r3 < 2.0 * len&&r3> step*len) {\n" +
-            "                   sign=1;" +
-            "               break;\n" +
-            "            }\n" +
-            "         }\n" +
-            "         else if (m3 > 0.0) {\n" +
-            "            r1 = step * len*float(k - 2);\n" +
-            "            r2 = r3;\n" +
-            "            m1 = kernal(origin + dir * r1);\n" +
-            "            m2 = kernal(origin + dir * r2);\n" +
-            "            for (int l = 0; l < 2; l++) {\n" +
-            "               r3 = r1 * 0.5 + r2 * 0.5;\n" +
-            "               m3 = kernal(origin + dir * r3);\n" +
-            "               if (m3 > 0.0) {\n" +
-            "                  r2 = r3;\n" +
-            "                  m2 = m3;\n" +
-            "               }\n" +
-            "               else {\n" +
-            "                  r1 = r3;\n" +
-            "                  m1 = m3;\n" +
-            "               }\n" +
-            "            }\n" +
-            "            if (r3 < 2.0 * len&&r3> step*len) {\n" +
-            "                   sign=1;" +
-            "               break;\n" +
-            "            }\n" +
-            "         }\n" +
-            "      }\n" +
-            "      v2 = v1;\n" +
-            "      v1 = v;\n" +
-            "   }\n" +
-            "   if (sign==1) {\n" +
-            "      ver = origin + dir*r3 ;\n" +
-                "       r1=ver.x*ver.x+ver.y*ver.y+ver.z*ver.z;" +
-            "      n.x = kernal(ver - right * (r3*0.00025)) - kernal(ver + right * (r3*0.00025));\n" +
-            "      n.y = kernal(ver - up * (r3*0.00025)) - kernal(ver + up * (r3*0.00025));\n" +
-            "      n.z = kernal(ver + forward * (r3*0.00025)) - kernal(ver - forward * (r3*0.00025));\n" +
-            "      r3 = n.x*n.x+n.y*n.y+n.z*n.z;\n" +
-            "      n = n * (1.0 / sqrt(r3));\n" +
-            "      ver = localdir;\n" +
-            "      r3 = ver.x*ver.x+ver.y*ver.y+ver.z*ver.z;\n" +
-            "      ver = ver * (1.0 / sqrt(r3));\n" +
-            "      reflect = n * (-2.0*dot(ver, n)) + ver;\n" +
-            "      r3 = reflect.x*0.276+reflect.y*0.920+reflect.z*0.276;\n" +
-            "      r4 = n.x*0.276+n.y*0.920+n.z*0.276;\n" +
-            "      r3 = max(0.0,r3);\n" +
-            "      r3 = r3 * r3*r3*r3;\n" +
-            "      r3 = r3 * 0.45 + r4 * 0.25 + 0.3;\n" +
-            "      // Modified color calculation for purple, blue, and red scheme\n" +
-            "      n.x = sin(r1*8.0)*0.5+0.5;  // Red component\n" +
-            "      n.y = sin(r1*8.0+3.14)*0.5+0.5;  // Blue component\n" +
-            "      n.z = sin(r1*8.0+1.57)*0.5+0.5;  // Purple component\n" +
-            "      color = n*r3;\n" +
-            "   }\n" +
-            "   gl_FragColor = vec4(color.x, color.y, color.z, 1.0);" +
-            "}";
+        var VSHADER_SOURCE = `
+        #version 100
+        precision highp float;
+
+        attribute vec4 position;
+        varying vec3 dir, localdir;
+        uniform vec3 right, forward, up, origin;
+        uniform float x, y;
+
+        void main() {
+            gl_Position = position;
+            dir = forward + right * position.x * x + up * position.y * y;
+            localdir.x = position.x * x;
+            localdir.y = position.y * y;
+            localdir.z = -1.0;
+            }`;
+        var FSHADER_SOURCE = `
+        #version 100
+        #define PI 3.14159265358979324
+        #define M_L 0.3819660113
+        #define M_R 0.6180339887
+        #define MAXR 32
+        #define SOLVER 32
+        precision highp float;
+
+        float kernal(vec3 ver);
+        uniform vec3 right, forward, up, origin;
+        varying vec3 dir, localdir;
+        uniform float len;
+        vec3 ver;
+        int sign;
+        float v, v1, v2;
+        float r1, r2, r3, r4, m1, m2, m3, m4;
+        vec3 n, reflect;
+        const float step = 0.002;
+        vec3 color;
+
+        void main() {
+            color.r = 0.0;
+            color.g = 0.0;
+            color.b = 0.0;
+            sign = 0;
+            v1 = kernal(origin + dir * (step*len));
+            v2 = kernal(origin);
+            
+            for (int k = 2; k < 1008; k++) {
+                ver = origin + dir * (step*len*float(k));
+                v = kernal(ver);
+                
+                if (v > 0.0 && v1 < 0.0) {
+                    r1 = step * len*float(k - 1);
+                    r2 = step * len*float(k);
+                    m1 = kernal(origin + dir * r1);
+                    m2 = kernal(origin + dir * r2);
+                    
+                    for (int l = 0; l < 2; l++) {
+                        r3 = r1 * 0.5 + r2 * 0.5;
+                        m3 = kernal(origin + dir * r3);
+                        if (m3 > 0.0) {
+                        r2 = r3;
+                        m2 = m3;
+                        }
+                        else {
+                        r1 = r3;
+                        m1 = m3;
+                        }
+                    }
+                    
+                    if (r3 < 2.0 * len) {
+                        sign = 1;
+                        break;
+                    }
+                }
+            
+            if (v < v1 && v1 > v2 && v1 < 0.0 && (v1*2.0 > v || v1 * 2.0 > v2)) {
+                r1 = step * len*float(k - 2);
+                r2 = step * len*(float(k) - 2.0 + 2.0*M_L);
+                r3 = step * len*(float(k) - 2.0 + 2.0*M_R);
+                r4 = step * len*float(k);
+                m2 = kernal(origin + dir * r2);
+                m3 = kernal(origin + dir * r3);
+                
+                for (int l = 0; l < 2; l++) {
+                    if (m2 > m3) {
+                    r4 = r3;
+                    r3 = r2;
+                    r2 = r4 * M_L + r1 * M_R;
+                    m3 = m2;
+                    m2 = kernal(origin + dir * r2);
+                    }
+                    else {
+                    r1 = r2;
+                    r2 = r3;
+                    r3 = r4 * M_R + r1 * M_L;
+                    m2 = m3;
+                    m3 = kernal(origin + dir * r3);
+                    }
+                }
+                
+                if (m2 > 0.0) {
+                    r1 = step * len*float(k - 2);
+                    r2 = r2;
+                    m1 = kernal(origin + dir * r1);
+                    m2 = kernal(origin + dir * r2);
+                    
+                    for (int l = 0; l < 2; l++) {
+                    r3 = r1 * 0.5 + r2 * 0.5;
+                    m3 = kernal(origin + dir * r3);
+                    if (m3 > 0.0) {
+                        r2 = r3;
+                        m2 = m3;
+                    }
+                    else {
+                        r1 = r3;
+                        m1 = m3;
+                    }
+                    }
+                    
+                    if (r3 < 2.0 * len && r3 > step*len) {
+                    sign = 1;
+                    break;
+                    }
+                }
+                else if (m3 > 0.0) {
+                    r1 = step * len*float(k - 2);
+                    r2 = r3;
+                    m1 = kernal(origin + dir * r1);
+                    m2 = kernal(origin + dir * r2);
+                    
+                    for (int l = 0; l < 2; l++) {
+                    r3 = r1 * 0.5 + r2 * 0.5;
+                    m3 = kernal(origin + dir * r3);
+                    if (m3 > 0.0) {
+                        r2 = r3;
+                        m2 = m3;
+                    }
+                    else {
+                        r1 = r3;
+                        m1 = m3;
+                    }
+                    }
+                    
+                    if (r3 < 2.0 * len && r3 > step*len) {
+                    sign = 1;
+                    break;
+                    }
+                }
+            }
+            
+            v2 = v1;
+            v1 = v;
+        }
+        
+        if (sign == 1) {
+            ver = origin + dir * r3;
+            r1 = ver.x * ver.x + ver.y * ver.y + ver.z * ver.z;
+            n.x = kernal(ver - right * (r3*0.00025)) - kernal(ver + right * (r3*0.00025));
+            n.y = kernal(ver - up * (r3*0.00025)) - kernal(ver + up * (r3*0.00025));
+            n.z = kernal(ver + forward * (r3*0.00025)) - kernal(ver - forward * (r3*0.00025));
+            r3 = n.x * n.x + n.y * n.y + n.z * n.z;
+            n = n * (1.0 / sqrt(r3));
+            ver = localdir;
+            r3 = ver.x * ver.x + ver.y * ver.y + ver.z * ver.z;
+            ver = ver * (1.0 / sqrt(r3));
+            reflect = n * (-2.0 * dot(ver, n)) + ver;
+            r3 = reflect.x * 0.276 + reflect.y * 0.920 + reflect.z * 0.276;
+            r4 = n.x * 0.276 + n.y * 0.920 + n.z * 0.276;
+            r3 = max(0.0, r3);
+            r3 = r3 * r3 * r3 * r3;
+            r3 = r3 * 0.45 + r4 * 0.25 + 0.3;
+            
+        // color 
+            n.x = sin(r1 * 8.0) * 0.5 + 0.5;  // Red component
+            n.y = sin(r1 * 8.0 + 3.14) * 0.5 + 0.5;  // Blue component
+            n.z = sin(r1 * 8.0 + 1.57) * 0.5 + 0.5;  // Purple component
+            color = n * r3;
+        }
+        
+        gl_FragColor = vec4(color.x, color.y, color.z, 1.0);
+        }`;
         vertshader = gl.createShader(gl.VERTEX_SHADER);
         fragshader = gl.createShader(gl.FRAGMENT_SHADER);
         shaderProgram = gl.createProgram();
