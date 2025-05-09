@@ -455,7 +455,7 @@ window.onload = function () {
             "      r3 = max(0.0,r3);\n" +
             "      r3 = r3 * r3*r3*r3;\n" +
             "      r3 = r3 * 0.45 + r4 * 0.25 + 0.3;\n" +
-            "      // Modified color calculation for purple, blue, and red scheme\n" +
+             // Modified color calculation for purple, blue, and red scheme\n" +
             "      n.x = sin(r1*8.0)*0.5+0.5;  // Red component\n" +
             "      n.y = sin(r1*8.0+3.14)*0.5+0.5;  // Blue component\n" +
             "      n.z = sin(r1*8.0+1.57)*0.5+0.5;  // Purple component\n" +
