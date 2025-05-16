@@ -9,7 +9,7 @@ This is a **web-based benchmarking tool** that uses **ray marching** to render a
 - 🚀 GPU-accelerated ray marching using WebGL
 - 📦 No install required — runs directly in your browser
 
-//## 🔗 Try It Out
+## 🔗 Try It Out
 
 //> [👉 Live Demo](https://samrat079.github.io/Fractal_Benchmark/)  
 
