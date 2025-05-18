@@ -11,7 +11,7 @@ This is a **web-based benchmarking tool** that uses **ray marching** to render a
 
 ## 🔗 Try It Out
 
-//> [👉 Live Demo](https://samrat079.github.io/Fractal_Benchmark/)  
+> [👉 Live Demo](https://samrat079.github.io/Fractal_Benchmark/)  
 
 ## 📸 Preview
 
