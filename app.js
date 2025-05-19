@@ -474,10 +474,10 @@ window.onload = function () {
             r3 = r3 * 0.45 + r4 * 0.25 + 0.3;
             
         // color 
-            n.x = sin(r1 * 8.0) * 0.5 + 0.5;  // Red component
-            n.y = sin(r1 * 8.0 + 3.14) * 0.5 + 0.5;  // Blue component
-            n.z = sin(r1 * 8.0 + 1.57) * 0.5 + 0.5;  // Purple component
-            color = n * r3;
+            n.x = sin(r1 * 4.0 + 1.0) * 0.3 + 0.6;  // Red
+            n.y = sin(r1 * 4.0 + 3.0) * 0.1 + 0.2;  // Green
+            n.z = sin(r1 * 4.0 + 5.0) * 0.2 + 0.5;  // Blue
+            color = n * (r3 * 2.0);
         }
         
         gl_FragColor = vec4(color.x, color.y, color.z, 1.0);
